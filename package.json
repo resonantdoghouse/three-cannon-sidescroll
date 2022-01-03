@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "cannon": "^0.6.2",
+    "cannon-es": "^0.18.0",
     "dat.gui": "^0.7.7",
     "p5": "^1.4.0",
     "three": "^0.136.0"

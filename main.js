@@ -2,14 +2,34 @@ import './style.css';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 const app = document.querySelector('#app');
+
+const gltfLoader = new GLTFLoader();
+let model = null;
+
+gltfLoader.load('/models/palmtree.gltf', (gltf) => {
+  model = { ...gltf };
+  let mesh = model.scene.children[0];
+
+  gltf.scene.traverse(function (node) {
+    if (node.isMesh) {
+      node.castShadow = true;
+    }
+  });
+  // tree.add(mesh);
+  scene.add(mesh);
+  mesh.castShadow = true;
+});
 
 /*
  * Scene
  */
 const color = 'rgb(106,193,222)';
-const near = 1000;
+const near = 100;
 const far = 1000;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(color);
@@ -59,6 +79,9 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   10000
 );
+
+const controls = new OrbitControls(camera, app);
+controls.enableDamping = true;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -124,27 +147,27 @@ const concretePlasticContactMaterial = new CANNON.ContactMaterial(
   }
 );
 let groundShape = new CANNON.Plane();
-let groundsphereBody = new CANNON.Body({
+let groundBody = new CANNON.Body({
   mass: 0,
   material: concreteMaterial,
 });
-groundsphereBody.quaternion.setFromAxisAngle(
+groundBody.quaternion.setFromAxisAngle(
   new CANNON.Vec3(-1, 0, 0),
   Math.PI * 0.5
 );
 
-groundsphereBody.addShape(groundShape);
-world.add(groundsphereBody);
+groundBody.addShape(groundShape);
+world.addBody(groundBody);
 
 // cannon sphere spherePhysicsShape
 const spherePhysicsShape = new CANNON.Sphere(1);
 mass = 1;
-let accX = 0;
+
 const sphereBody = new CANNON.Body({
   mass: 1,
   material: plasticMaterial,
 });
-sphereBody.position.set(0, 4, 0);
+sphereBody.position.set(0, 8, 0);
 sphereBody.addShape(spherePhysicsShape);
 world.addBody(sphereBody);
 
@@ -172,9 +195,8 @@ function setup() {
   camera.position.z = 22;
   camera.position.y = 3;
   camera.rotation.x = -0.3;
-  // camera.lookAt(0, 0, 0);
 
-  // controls.update();
+  controls.update();
   scene.add(light);
 
   floor.position.y = 0;
@@ -193,9 +215,10 @@ function setup() {
   draw();
 }
 
+let lastCallTime;
 function updatePhysics() {
   // Update the physics world
-  world.step(1 / 60, null, 3);
+  world.step(1 / 60);
   // Copy coordinates from Cannon.js to Three.js
   sphere.position.copy(sphereBody.position);
   sphere.quaternion.copy(sphereBody.quaternion);
@@ -209,15 +232,14 @@ const clock = new THREE.Clock();
 let oldElapsedTime = 0;
 
 function draw() {
-  // console.log(sphereBody.position);
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
   updatePhysics();
-
   camera.position.x = sphere.position.x;
   camera.position.y = sphere.position.y;
 
+  // controls.update();
   renderer.render(scene, camera);
   sunGroup.rotation.z = -elapsedTime * 0.1;
   sunLightGroup.rotation.z = -elapsedTime * 0.1;
