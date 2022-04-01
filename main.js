@@ -4,7 +4,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import * as CANNON from 'cannon-es';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const app = document.querySelector('#app');
 
@@ -80,8 +80,8 @@ const camera = new THREE.PerspectiveCamera(
   10000
 );
 
-const controls = new OrbitControls(camera, app);
-controls.enableDamping = true;
+// const controls = new OrbitControls(camera, app);
+// controls.enableDamping = true;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -196,7 +196,7 @@ function setup() {
   camera.position.y = 3;
   camera.rotation.x = -0.3;
 
-  controls.update();
+  // controls.update();
   scene.add(light);
 
   floor.position.y = 0;
