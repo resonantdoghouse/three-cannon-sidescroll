@@ -104,7 +104,7 @@ scene.add(sunLightGroup);
 
 const loader = new FontLoader();
 
-loader.load('./public/fonts/helvetiker_regular.typeface.json', function (font) {
+loader.load('/fonts/helvetiker_regular.typeface.json', function (font) {
   const textGeom = new TextGeometry('Three JS', {
     font: font,
     size: 4,
